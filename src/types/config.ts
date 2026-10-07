@@ -13,8 +13,8 @@ export const agentConfigSchema = z.object({
 export type AgentConfig = z.infer<typeof agentConfigSchema>;
 
 export const sentinelConfigSchema = z.object({
-  anthropic: z.object({
-    model: z.string().default('claude-sonnet-4-20250514'),
+  gemini: z.object({
+    model: z.string().default('gemini-2.5-flash'),
     max_tokens: z.number().default(4096),
   }).default({}),
   slack: z.object({

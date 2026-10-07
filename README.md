@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <strong>Autonomous QA agent — generates and runs E2E tests on PR events via the Claude API.</strong>
+  <strong>Autonomous QA agent — generates and runs E2E tests on PR events via the Google Gemini API.</strong>
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@ A four-stage sequential pipeline:
                     │              selectors, event specs,      │
                     │              existing test statuses       │
                     ├──────────────────────────────────────────┤
-                    │ 2. Plan      Claude API generates test    │
+                    │ 2. Plan      Gemini API generates test    │
                     │              cases + executable code,     │
                     │              then self-critiques them     │
                     ├──────────────────────────────────────────┤
@@ -44,7 +44,7 @@ A four-stage sequential pipeline:
 | Stage | Module | What it does |
 |-------|--------|--------------|
 | Analyze | `src/agent/analyzer.ts` | Collects the git diff, optional PRD file, app entry, UI selectors, analytics event specs, and prior test statuses into an `AnalysisContext`. |
-| Plan | `src/agent/planner.ts` | Sends that context to Claude, parses the response into a Zod-validated `PlannedTest[]`, then runs a self-critique pass over the generated code. |
+| Plan | `src/agent/planner.ts` | Sends that context to Gemini, parses the response into a Zod-validated `PlannedTest[]`, then runs a self-critique pass over the generated code. |
 | Execute | `src/agent/index.ts` → `src/runners/` | Validates every generated test through an AST-based security check, writes the survivors to a temp directory, and runs them with Playwright. |
 | Report | `src/report/` | Renders a Markdown report, saves it alongside raw JSON, prints it to stdout, and returns a pass/fail exit code. |
 
@@ -55,8 +55,8 @@ A four-stage sequential pipeline:
 npm install
 npm run build
 
-# Claude API key (read by the Anthropic SDK)
-export ANTHROPIC_API_KEY=sk-ant-...
+# Gemini API key (read by the Google Gen AI SDK)
+export GEMINI_API_KEY=your_api_key_here
 
 # Run against the last commit, no PR required
 npx sentinel-qa run --app arden-web --diff HEAD~1
@@ -122,8 +122,8 @@ events:
 Drop a `sentinel-qa.config.yaml` (or `.yml`) in the working directory, or point at its directory with `--config`. Every field is optional; the defaults below apply when the file is absent.
 
 ```yaml
-anthropic:
-  model: claude-sonnet-4-20250514
+gemini:
+  model: gemini-2.5-flash
   max_tokens: 4096
 
 slack:
@@ -150,7 +150,8 @@ cost:
 
 | Variable | Description |
 |----------|-------------|
-| `ANTHROPIC_API_KEY` | Claude API key. Required — consumed directly by the Anthropic SDK. |
+| `GEMINI_API_KEY` | Google Gemini API key. Required — consumed directly by the Google Gen AI SDK. |
+| `GEMINI_MODEL` | Optional model override (defaults to `gemini-2.5-flash`). |
 | `SLACK_WEBHOOK_URL` | Overrides `slack.webhook_url` in the config file. |
 | `DEBUG` | Enables debug-level logging. |
 
@@ -172,7 +173,7 @@ Rejected tests are recorded as `skipped` with the validation error and the run c
 
 ### Token budget enforcement
 
-Every Claude call is logged with its input/output token counts, and the running total is checked before each request. Exceeding `cost.max_tokens_per_run` aborts the run rather than silently spending more.
+Every Gemini API call is logged with its input/output token counts, and the running total is checked before each request. Exceeding `cost.max_tokens_per_run` aborts the run rather than silently spending more.
 
 ### Quarantine tracking
 
@@ -238,7 +239,7 @@ Tests run against compiled output, so `npm run build` must succeed first. The fu
 | Area | Status |
 |------|--------|
 | CLI trigger, Analyze stage | Done |
-| Plan stage (Claude API, self-critique) | Done |
+| Plan stage (Gemini API, self-critique) | Done |
 | Execute stage (Playwright, AST gate) | Done |
 | Report generation (Markdown + JSON) | Done |
 | Analytics capture during test runs | Planned |

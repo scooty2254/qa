@@ -29,9 +29,20 @@ export async function loadConfig(baseDir?: string): Promise<SentinelConfig> {
     }
   }
 
+  // Support migrating legacy anthropic config section if present in user files
+  if (raw.anthropic && !raw.gemini) {
+    logger.warn('Found legacy "anthropic" config; migrating to "gemini"');
+    raw.gemini = raw.anthropic;
+  }
+
   // Environment variable overrides
-  if (process.env.ANTHROPIC_API_KEY && !raw.anthropic) {
-    raw.anthropic = {};
+  if (process.env.GEMINI_API_KEY && !raw.gemini) {
+    raw.gemini = {};
+  }
+  if (process.env.GEMINI_MODEL) {
+    const gemini = (raw.gemini ?? {}) as Record<string, unknown>;
+    gemini.model = process.env.GEMINI_MODEL;
+    raw.gemini = gemini;
   }
   if (process.env.SLACK_WEBHOOK_URL) {
     const slack = (raw.slack ?? {}) as Record<string, unknown>;

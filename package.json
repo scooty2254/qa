@@ -1,7 +1,7 @@
 {
   "name": "sentinel-qa",
   "version": "0.1.0",
-  "description": "Autonomous QA agent — generates and runs E2E tests on PR events via Claude API",
+  "description": "Autonomous QA agent — generates and runs E2E tests on PR events via Google Gemini API",
   "type": "module",
   "bin": {
     "sentinel-qa": "./dist/index.js"
@@ -22,7 +22,7 @@
     "analytics",
     "sentinel",
     "agent",
-    "claude"
+    "gemini"
   ],
   "files": [
     "dist",
@@ -31,10 +31,10 @@
   "scripts": {
     "build": "tsc",
     "test": "node --test dist/__tests__/**/*.test.js dist/__tests__/**/**/*.test.js",
-    "lint": "echo \"No lint yet\""
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.80.0",
+    "@google/genai": "^2.27.0",
     "@playwright/test": "^1.52.0",
     "yaml": "^2.8.2",
     "zod": "^3.24.4"

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-sentinel-qa is an autonomous QA agent that triggers on PR events, generates test cases via Claude API, executes E2E tests (Playwright for web, Patrol for Flutter), and reports results back to PRs and Slack. It also performs **data log QA** — capturing analytics events (Firebase, Amplitude, etc.) during test runs and validating them against predefined specs.
+sentinel-qa is an autonomous QA agent that triggers on PR events, generates test cases via Google Gemini API, executes E2E tests (Playwright for web, Patrol for Flutter), and reports results back to PRs and Slack. It also performs **data log QA** — capturing analytics events (Firebase, Amplitude, etc.) during test runs and validating them against predefined specs.
 
 ## Build & Run
 
@@ -28,7 +28,7 @@ npx sentinel-qa run --app <app-id> --diff HEAD~1   # local, no PR
 
 **Agent pipeline** (`src/agent/`): 4-stage sequential pipeline:
 1. **Analyze** — collect PR diff, PRD, selectors, event specs from registry
-2. **Plan** — Claude API generates test cases + executable test code
+2. **Plan** — Gemini API generates test cases + executable test code
 3. **Execute** — run tests via Playwright (web) or Patrol (Flutter)
 4. **Report** — generate Markdown report, post PR comment, send Slack bug report on failure
 

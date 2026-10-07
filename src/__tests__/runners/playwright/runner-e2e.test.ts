@@ -15,7 +15,8 @@ import { test, expect } from '@playwright/test';
 
 test('should load example.com', async ({ page }) => {
   await page.goto('https://example.com');
-  await expect(page.locator('h1')).toContainText('Example Domain');
+  await expect(page).toHaveTitle(/Example Domain/);
+  await expect(page.locator('body')).toContainText('documentation examples');
 });
 `,
       },
@@ -71,7 +72,7 @@ import { test, expect } from '@playwright/test';
 
 test('should pass', async ({ page }) => {
   await page.goto('https://example.com');
-  await expect(page.locator('h1')).toBeVisible();
+  await expect(page.locator('body')).toBeVisible();
 });
 `,
       },

@@ -6,6 +6,7 @@ export interface ReportMeta {
   suite: string;
   platform: string;
   timestamp: string;
+  tokenUsage?: { inputTokens: number; outputTokens: number };
 }
 
 function statusIcon(status: TestResult['status']): string {
@@ -42,6 +43,10 @@ export function generateMarkdownReport(
   lines.push(`| Platform | ${meta.platform} |`);
   lines.push(`| Timestamp | ${meta.timestamp} |`);
   lines.push(`| Duration | ${formatDuration(result.duration)} |`);
+  if (meta.tokenUsage) {
+    const totalTokens = meta.tokenUsage.inputTokens + meta.tokenUsage.outputTokens;
+    lines.push(`| Tokens | ${meta.tokenUsage.inputTokens} in / ${meta.tokenUsage.outputTokens} out (${totalTokens} total) |`);
+  }
   lines.push('');
 
   // Summary

@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenAI } from '@google/genai';
 import { logger } from '../utils/logger.js';
 import type { SentinelConfig } from '../types/config.js';
 
@@ -15,7 +15,7 @@ export interface LLMResponse {
 /**
  * Abstract LLM client interface.
  *
- * Allows swapping Claude for another provider in the future.
+ * Allows swapping LLM providers.
  */
 export interface LLMClient {
   call(systemPrompt: string, userPrompt: string): Promise<LLMResponse>;
@@ -23,19 +23,23 @@ export interface LLMClient {
 }
 
 /**
- * Claude API client with token usage tracking.
+ * Google Gemini API client with token usage tracking.
  */
-export class ClaudeLLMClient implements LLMClient {
-  private client: Anthropic;
+export class GeminiLLMClient implements LLMClient {
+  private client: GoogleGenAI;
   private model: string;
   private maxTokens: number;
   private maxTokensPerRun: number;
   private totalUsage: TokenUsage = { inputTokens: 0, outputTokens: 0 };
 
   constructor(config: SentinelConfig) {
-    this.client = new Anthropic();
-    this.model = config.anthropic.model;
-    this.maxTokens = config.anthropic.max_tokens;
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      logger.warn('GEMINI_API_KEY environment variable is not set');
+    }
+    this.client = new GoogleGenAI({ apiKey: apiKey || '' });
+    this.model = config.gemini.model;
+    this.maxTokens = config.gemini.max_tokens;
     this.maxTokensPerRun = config.cost.max_tokens_per_run;
   }
 
@@ -49,31 +53,34 @@ export class ClaudeLLMClient implements LLMClient {
       );
     }
 
-    logger.info(`Calling Claude API (model: ${this.model})...`);
+    logger.info(`Calling Gemini API (model: ${this.model})...`);
 
-    const response = await this.client.messages.create({
+    const response = await this.client.models.generateContent({
       model: this.model,
-      max_tokens: this.maxTokens,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userPrompt }],
+      contents: userPrompt,
+      config: {
+        systemInstruction: systemPrompt,
+        maxOutputTokens: this.maxTokens,
+      },
     });
 
+    const inputTokens = response.usageMetadata?.promptTokenCount ?? 0;
+    const outputTokens = response.usageMetadata?.candidatesTokenCount ?? 0;
+
     const usage: TokenUsage = {
-      inputTokens: response.usage.input_tokens,
-      outputTokens: response.usage.output_tokens,
+      inputTokens,
+      outputTokens,
     };
 
     this.totalUsage.inputTokens += usage.inputTokens;
     this.totalUsage.outputTokens += usage.outputTokens;
 
     logger.info(
-      `Claude API response: ${usage.inputTokens} input + ${usage.outputTokens} output tokens ` +
+      `Gemini API response: ${usage.inputTokens} input + ${usage.outputTokens} output tokens ` +
       `(total: ${this.totalUsage.inputTokens + this.totalUsage.outputTokens})`,
     );
 
-    // Extract text content
-    const textBlock = response.content.find((b) => b.type === 'text');
-    const content = textBlock?.text ?? '';
+    const content = response.text ?? '';
 
     return { content, usage };
   }

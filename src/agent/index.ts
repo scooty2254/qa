@@ -3,7 +3,7 @@ import type { AgentConfig, SentinelConfig } from '../types/config.js';
 import type { UnifiedRunResult, UnifiedTestResult } from '../types/runner.js';
 import { AppRegistry } from '../registry/registry.js';
 import { TestStatusStore } from '../store/test-status-store.js';
-import { ClaudeLLMClient } from './llm-client.js';
+import { GeminiLLMClient } from './llm-client.js';
 import { analyze } from './analyzer.js';
 import { planTests } from './planner.js';
 import type { PlannedTest } from './planner.js';
@@ -47,7 +47,7 @@ export async function runAgent(
 
   // Stage 2: Plan
   logger.info('Stage 2: Plan — generating test cases...');
-  const llmClient = new ClaudeLLMClient(sentinelConfig);
+  const llmClient = new GeminiLLMClient(sentinelConfig);
   const plannedTests = await planTests(context, llmClient);
 
   if (plannedTests.length === 0) {
@@ -92,19 +92,23 @@ export async function runAgent(
 
   // Stage 4: Report
   logger.info('Stage 4: Report — generating report...');
+  const tokenUsage = llmClient.getTotalUsage();
+  const reportMeta = {
+    appId: agentConfig.appId,
+    suite: 'auto',
+    platform: webTests.length > 0 ? 'web' : 'flutter',
+    timestamp: new Date().toISOString(),
+    tokenUsage,
+  };
+
   const report = generateMarkdownReport(
     { ...runResult, total: runResult.tests.length },
-    {
-      appId: agentConfig.appId,
-      suite: 'auto',
-      platform: webTests.length > 0 ? 'web' : 'flutter',
-      timestamp: new Date().toISOString(),
-    },
+    reportMeta,
   );
 
   await reportStore.save(
     { ...runResult, total: runResult.tests.length },
-    { appId: agentConfig.appId, suite: 'auto', platform: 'web' },
+    reportMeta,
   );
 
   const hasFailures = runResult.failed > 0 || runResult.timedOut > 0;
