@@ -18,7 +18,7 @@ describe('loadConfig', () => {
 
   it('should return defaults when no config file exists', async () => {
     const config = await loadConfig(tempDir);
-    assert.equal(config.gemini.model, 'gemini-2.5-flash');
+    assert.equal(config.gemini.model, 'gemini-3.8-flash');
     assert.equal(config.test.max_retries, 3);
     assert.equal(config.test.confidence_threshold, 0.7);
     assert.equal(config.cost.track_tokens, true);

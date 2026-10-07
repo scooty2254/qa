@@ -60,7 +60,7 @@
 - [ ] Event capture — "not yet implemented" 경고 반환 (러너 통합 시 구현)
 
 ### 0-5. 문서 및 설정 업데이트
-- [x] `CLAUDE.md` 업데이트
+- [x] `GEMINI.md` 업데이트
   - [x] "No LLM calls" 제약 제거
   - [x] 단일 패키지 구조 반영
   - [x] 새 빌드/테스트 커맨드 반영

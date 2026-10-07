@@ -123,7 +123,7 @@ Drop a `sentinel-qa.config.yaml` (or `.yml`) in the working directory, or point 
 
 ```yaml
 gemini:
-  model: gemini-2.5-flash
+  model: gemini-3.8-flash
   max_tokens: 4096
 
 slack:
@@ -151,7 +151,7 @@ cost:
 | Variable | Description |
 |----------|-------------|
 | `GEMINI_API_KEY` | Google Gemini API key. Required — consumed directly by the Google Gen AI SDK. |
-| `GEMINI_MODEL` | Optional model override (defaults to `gemini-2.5-flash`). |
+| `GEMINI_MODEL` | Optional model override (defaults to `gemini-3.8-flash`). |
 | `SLACK_WEBHOOK_URL` | Overrides `slack.webhook_url` in the config file. |
 | `DEBUG` | Enables debug-level logging. |
 
@@ -224,7 +224,7 @@ npm run test             # node:test over dist/
 npm run lint
 ```
 
-Tests run against compiled output, so `npm run build` must succeed first. The full contributor workflow — develop → build → review → test → checklist → commit — is described in [CLAUDE.md](CLAUDE.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+Tests run against compiled output, so `npm run build` must succeed first. The full contributor workflow — develop → build → review → test → checklist → commit — is described in [GEMINI.md](GEMINI.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **Constraints worth knowing before you patch anything:**
 

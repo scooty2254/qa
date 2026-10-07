@@ -14,7 +14,7 @@ export type AgentConfig = z.infer<typeof agentConfigSchema>;
 
 export const sentinelConfigSchema = z.object({
   gemini: z.object({
-    model: z.string().default('gemini-2.5-flash'),
+    model: z.string().default('gemini-3.8-flash'),
     max_tokens: z.number().default(4096),
   }).default({}),
   slack: z.object({

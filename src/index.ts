@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import 'dotenv/config';
 import { runCli } from './triggers/cli.js';
 
 const exitCode = await runCli(process.argv.slice(2));

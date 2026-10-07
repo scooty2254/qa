@@ -7,7 +7,7 @@ describe('GeminiLLMClient', () => {
   it('should initialize with config and track token usage', () => {
     const config = sentinelConfigSchema.parse({
       gemini: {
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.8-flash',
         max_tokens: 2048,
       },
       cost: {
