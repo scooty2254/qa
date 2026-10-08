@@ -28,8 +28,12 @@
     "dist",
     "README.md"
   ],
+  "workspaces": [
+    "web-ui"
+  ],
   "scripts": {
-    "build": "tsc",
+    "dev": "npm run dev --workspace=web-ui",
+    "build": "tsc && npm run build --workspace=web-ui",
     "test": "node --test dist/__tests__/**/*.test.js dist/__tests__/**/**/*.test.js",
     "lint": "tsc --noEmit"
   },

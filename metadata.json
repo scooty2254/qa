@@ -1,0 +1,7 @@
+{
+  "name": "Sentinel QA",
+  "description": "Autonomous QA agent — generates and runs E2E tests on PR events via Google Gemini API",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
